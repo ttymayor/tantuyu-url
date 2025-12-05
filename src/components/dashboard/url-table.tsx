@@ -8,7 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EditUrlSheet } from "@/components/dashboard/edit-url-sheet";
+import { EditUrlDialog } from "@/components/dashboard/edit-url-dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 interface UrlTableProps {
   urls: {
@@ -20,13 +24,37 @@ interface UrlTableProps {
   }[];
 }
 
+function CopyButton({ shortCode }: { shortCode: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    const fullUrl = `${window.location.origin}/${shortCode}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopied(true);
+    toast.success("URL copied to clipboard");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-6 w-6"
+      onClick={handleCopy}
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      <span className="sr-only">Copy URL</span>
+    </Button>
+  );
+}
+
 export function UrlTable({ urls }: UrlTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[150px]">Short Code</TableHead>
+            <TableHead className="w-[200px]">Short Code</TableHead>
             <TableHead className="max-w-[400px]">Original URL</TableHead>
             <TableHead className="w-[100px] text-right">Clicks</TableHead>
             <TableHead className="w-[200px] text-right">Created At</TableHead>
@@ -36,7 +64,10 @@ export function UrlTable({ urls }: UrlTableProps) {
         <TableBody>
           {urls.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+              <TableCell
+                colSpan={5}
+                className="text-muted-foreground h-24 text-center"
+              >
                 No URLs found.
               </TableCell>
             </TableRow>
@@ -44,16 +75,22 @@ export function UrlTable({ urls }: UrlTableProps) {
             urls.map((url) => (
               <TableRow key={url.id}>
                 <TableCell className="font-medium">
-                  <a
-                    href={`/${url.shortCode}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-primary hover:underline"
-                  >
-                    {url.shortCode}
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`/${url.shortCode}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary font-mono hover:underline"
+                    >
+                      {url.shortCode}
+                    </a>
+                    <CopyButton shortCode={url.shortCode} />
+                  </div>
                 </TableCell>
-                <TableCell className="max-w-[400px] truncate" title={url.originalUrl}>
+                <TableCell
+                  className="max-w-[400px] truncate"
+                  title={url.originalUrl}
+                >
                   {url.originalUrl}
                 </TableCell>
                 <TableCell className="text-right">{url.clicks}</TableCell>
@@ -61,7 +98,7 @@ export function UrlTable({ urls }: UrlTableProps) {
                   {url.createdAt.toLocaleString()}
                 </TableCell>
                 <TableCell>
-                  <EditUrlSheet
+                  <EditUrlDialog
                     url={{
                       id: url.id,
                       originalUrl: url.originalUrl,

@@ -33,13 +33,13 @@ export default async function DashboardPage(props: {
       <div className="w-full max-w-4xl space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Recent URLs</h2>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             Total: {totalItems}
           </span>
         </div>
-        
+
         <UrlTable urls={userUrls} />
-        
+
         <PaginationControls
           totalItems={totalItems}
           currentPage={page}

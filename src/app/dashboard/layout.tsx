@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SiteHeader } from "@/components/SiteHeader";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function DashboardLayout({
   children,
@@ -17,6 +18,8 @@ export default function DashboardLayout({
         } as React.CSSProperties
       }
     >
+      <Toaster position="bottom-center" richColors />
+
       {/* 側邊欄 */}
       <AppSidebar variant="inset" />
 
