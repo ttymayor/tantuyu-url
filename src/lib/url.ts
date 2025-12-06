@@ -126,3 +126,17 @@ export const getUrlAnalytics = async (urlId: string) => {
     const events = await db.select().from(urlEvents).where(eq(urlEvents.urlId, urlId));
     return events;
 };
+
+export const deleteUrl = async (id: string, userId: string) => {
+  const [existing] = await db.select().from(urls).where(eq(urls.id, id)).limit(1);
+
+  if (!existing) {
+    throw new Error("URL not found");
+  }
+
+  if (existing.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  await db.delete(urls).where(eq(urls.id, id));
+};

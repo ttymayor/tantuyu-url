@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EditUrlDialog } from "@/components/dashboard/edit-url-dialog";
+import { DeleteUrlDialog } from "@/components/dashboard/delete-url-dialog";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, BarChart2 } from "lucide-react";
 import { useState } from "react";
@@ -100,6 +101,12 @@ export function UrlTable({ urls }: UrlTableProps) {
                         expiresAt: url.expiresAt
                           ? new Date(url.expiresAt)
                           : null,
+                      }}
+                    />
+                    <DeleteUrlDialog
+                      url={{
+                        id: url.id,
+                        shortCode: url.shortCode,
                       }}
                     />
                   </div>

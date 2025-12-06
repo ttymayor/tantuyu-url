@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { createShortUrl, updateShortUrl } from "@/lib/url";
+import { createShortUrl, updateShortUrl, deleteUrl } from "@/lib/url";
 import { revalidatePath } from "next/cache";
 
 function isValidUrl(urlString: string) {
@@ -193,6 +193,28 @@ export async function updateUrlAction(id: string, formData: FormData) {
       expiresAt,
     });
 
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    return { error: handleError(error) };
+  }
+}
+
+export async function deleteUrlAction(id: string) {
+  if (!id || typeof id !== "string") {
+    return { error: "無效的 URL ID" };
+  }
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: "未授權，請先登入" };
+  }
+
+  try {
+    await deleteUrl(id, session.user.id);
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
