@@ -23,6 +23,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Globe, MapPin, Monitor, Smartphone } from "lucide-react";
 
 interface AnalyticsData {
   browsers: { name: string; value: number }[];
@@ -98,7 +99,10 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
       {/* Devices Pie Chart */}
       <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle>Device Distribution</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Smartphone />
+            Device Distribution
+          </CardTitle>
           <CardDescription>Clicks by device type</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 pb-0">
@@ -160,7 +164,10 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
       {/* Browsers Bar Chart (Horizontal) */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Browsers</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Globe />
+            Top Browsers
+          </CardTitle>
           <CardDescription>Clicks by browser</CardDescription>
         </CardHeader>
         <CardContent>
@@ -226,7 +233,10 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
       {/* OS Bar Chart (Vertical) */}
       <Card>
         <CardHeader>
-          <CardTitle>Operating Systems</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Monitor />
+            Operating Systems
+          </CardTitle>
           <CardDescription>Clicks by OS</CardDescription>
         </CardHeader>
         <CardContent>
@@ -257,7 +267,10 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
       {/* Countries Bar Chart (Horizontal) */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Locations</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin />
+            Top Locations
+          </CardTitle>
           <CardDescription>Clicks by country</CardDescription>
         </CardHeader>
         <CardContent>

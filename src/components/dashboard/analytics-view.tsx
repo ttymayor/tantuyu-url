@@ -3,7 +3,7 @@
 import useSWR from "swr";
 import { AnalyticsCharts } from "@/components/dashboard/analytics-charts";
 import { AnalyticsMap } from "@/components/dashboard/analytics-map";
-import { Loader2, ArrowLeft, RefreshCcw } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -14,10 +14,7 @@ interface AnalyticsViewProps {
 }
 
 export function AnalyticsView({ urlId }: AnalyticsViewProps) {
-  const { data, error, isLoading, mutate } = useSWR(
-    `/api/analytics/${urlId}`,
-    fetcher,
-  );
+  const { data, error, isLoading } = useSWR(`/api/analytics/${urlId}`, fetcher);
 
   if (error) return <div>Failed to load analytics</div>;
   if (isLoading && !data) {
@@ -31,7 +28,7 @@ export function AnalyticsView({ urlId }: AnalyticsViewProps) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex w-full flex-col gap-4 md:flex-row md:items-center">
           <Button variant="outline" size="icon" asChild>
             <Link href="/dashboard">
               <ArrowLeft className="h-4 w-4" />
@@ -49,18 +46,6 @@ export function AnalyticsView({ urlId }: AnalyticsViewProps) {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          onClick={() => mutate()}
-          disabled={isLoading}
-        >
-          <RefreshCcw
-            className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-          />
-          Refresh
-        </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

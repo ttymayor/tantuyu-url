@@ -8,6 +8,7 @@ import {
 } from "react-simple-maps";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { scaleLinear } from "d3-scale";
+import { Map } from "lucide-react";
 
 const geoUrl =
   "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json";
@@ -28,7 +29,10 @@ export function AnalyticsMap({ data }: { data: LocationData[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>User Locations</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Map />
+          User Locations
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="aspect-video w-full overflow-hidden rounded-md border bg-slate-100 dark:bg-slate-900">
