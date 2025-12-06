@@ -1,7 +1,10 @@
 import { recordClick } from "@/lib/url";
 import { UAParser } from "ua-parser-js";
 
-export async function trackUrlVisit(urlId: string, headers: { get(name: string): string | null }) {
+export async function trackUrlVisit(
+  urlId: string,
+  headers: { get(name: string): string | null },
+) {
   const uaString = headers.get("user-agent") || "";
   const parser = new UAParser(uaString);
   const result = parser.getResult();

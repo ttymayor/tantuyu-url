@@ -1,6 +1,7 @@
 import { getUrlByCode } from "@/lib/url";
 import { trackUrlVisit } from "@/lib/analytics";
 import { redirect } from "next/navigation";
+import { constructUrl } from "@/lib/utils";
 
 export async function GET(
   request: Request,
@@ -31,10 +32,7 @@ export async function GET(
     if (record.password) {
       // We cannot easily render a page here.
       // Redirect to password page path
-      const host = request.headers.get("host") || "";
-      const protocol =
-        process.env.NODE_ENV === "development" ? "http" : "https";
-      return redirect(`${protocol}://${host}/p/${code}`);
+      return redirect(constructUrl(`/p/${code}`));
     }
     return redirect(record.originalUrl);
   }
@@ -52,10 +50,7 @@ export async function GET(
     // Even prefetch should not bypass password
     if (record.password) {
       // Redirect to password page
-      const host = request.headers.get("host") || "";
-      const protocol =
-        process.env.NODE_ENV === "development" ? "http" : "https";
-      return redirect(`${protocol}://${host}/p/${code}`);
+      return redirect(constructUrl(`/p/${code}`));
     }
     return redirect(record.originalUrl);
   }
@@ -64,9 +59,7 @@ export async function GET(
   if (record.password) {
     // We need to redirect the user to a password entry page
     // We will pass the target code as a param
-    const host = request.headers.get("host") || "";
-    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-    return redirect(`${protocol}://${host}/p/${code}`);
+    return redirect(constructUrl(`/p/${code}`));
   }
 
   // --- Analytics Recording ---
