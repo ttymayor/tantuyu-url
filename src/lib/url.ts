@@ -3,7 +3,7 @@ import { urls, urlEvents } from "@/db/schema";
 import { nanoid } from "nanoid";
 import { eq, sql, and, ne, desc, count } from "drizzle-orm";
 
-export const createShortUrl = async (originalUrl: string, userId?: string, customCode?: string, options?: { description?: string; password?: string; expiresAt?: Date }) => {
+export const createShortUrl = async (originalUrl: string, userId?: string, customCode?: string, options?: { description?: string; password?: string; expiresAt?: Date; socialPreview?: boolean }) => {
   const shortCode = customCode || nanoid(6);
   
   if (customCode) {
@@ -22,6 +22,7 @@ export const createShortUrl = async (originalUrl: string, userId?: string, custo
     description: options?.description || null,
     password: options?.password || null,
     expiresAt: options?.expiresAt || null,
+    socialPreview: options?.socialPreview || false,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -39,7 +40,7 @@ export const getUrlById = async (id: string) => {
   return result[0];
 };
 
-export const updateShortUrl = async (id: string, userId: string, data: { originalUrl: string; shortCode: string; description?: string | null; password?: string | null; expiresAt?: Date | null }) => {
+export const updateShortUrl = async (id: string, userId: string, data: { originalUrl: string; shortCode: string; description?: string | null; password?: string | null; expiresAt?: Date | null; socialPreview?: boolean }) => {
   const [existing] = await db.select().from(urls).where(eq(urls.id, id)).limit(1);
   
   if (!existing) {
@@ -69,6 +70,7 @@ export const updateShortUrl = async (id: string, userId: string, data: { origina
       description: data.description || null,
       password: data.password || null,
       expiresAt: data.expiresAt || null,
+      socialPreview: data.socialPreview || false,
       updatedAt: new Date(),
     })
     .where(eq(urls.id, id));

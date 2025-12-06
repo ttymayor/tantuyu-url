@@ -74,6 +74,7 @@ export async function shorten(formData: FormData) {
   const description = formData.get("description") as string;
   const password = formData.get("password") as string;
   const expiresAtRaw = formData.get("expiresAt") as string;
+  const socialPreview = formData.get("socialPreview") === "on";
 
   // 驗證輸入
   if (!url || typeof url !== "string" || url.trim() === "") {
@@ -120,6 +121,7 @@ export async function shorten(formData: FormData) {
         description: description?.trim() || undefined,
         password: password || undefined,
         expiresAt,
+        socialPreview,
       },
     );
 
@@ -136,6 +138,7 @@ export async function updateUrlAction(id: string, formData: FormData) {
   const description = formData.get("description") as string;
   const password = formData.get("password") as string;
   const expiresAtRaw = formData.get("expiresAt") as string;
+  const socialPreview = formData.get("socialPreview") === "on";
 
   // 驗證輸入
   if (!id || typeof id !== "string") {
@@ -186,6 +189,7 @@ export async function updateUrlAction(id: string, formData: FormData) {
       description: description?.trim() || null,
       password: password || null,
       expiresAt,
+      socialPreview,
     });
 
     revalidatePath("/dashboard");

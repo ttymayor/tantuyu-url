@@ -33,8 +33,7 @@ function CopyButton({ shortCode }: { shortCode: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    const BASE_URL =
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
     const fullUrl = `${BASE_URL}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);

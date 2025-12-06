@@ -1,5 +1,0 @@
-{$DOMAIN_NAME} {
-    encode gzip
-
-    reverse_proxy app:3000
-}

@@ -62,6 +62,40 @@ export async function GET(
     return redirect(constructUrl(`/p/${code}`));
   }
 
+  // --- Social Preview Interception ---
+  if (record.socialPreview) {
+    const ua = request.headers.get("user-agent") || "";
+    const isBot = /facebookexternalhit|twitterbot|slackbot|whatsapp|telegrambot|discordbot|linkedinbot|pinterest|skypeuripreview/i.test(ua);
+
+    if (isBot) {
+      const title = record.description || "Short URL";
+      const description = `Click to visit ${record.originalUrl}`;
+      
+      const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta property="og:title" content="${title}">
+          <meta property="og:description" content="${description}">
+          <meta property="og:url" content="${record.originalUrl}">
+          <meta property="og:type" content="website">
+          <meta name="twitter:card" content="summary">
+          <meta name="twitter:title" content="${title}">
+          <meta name="twitter:description" content="${description}">
+          <title>${title}</title>
+        </head>
+        <body>
+          <script>window.location.href = "${record.originalUrl}";</script>
+        </body>
+        </html>
+      `;
+      return new Response(html, {
+        headers: { "Content-Type": "text/html" },
+      });
+    }
+  }
+
   // --- Analytics Recording ---
   await trackUrlVisit(record.id, request.headers);
 

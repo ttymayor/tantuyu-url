@@ -31,6 +31,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +78,7 @@ export function CreateUrlForm() {
             <InputGroupInput
               id="shortUrl"
               type="url"
-              placeholder="輸入網址 (e.g. https://example.com)"
+              placeholder="輸入網址（e.g. https://example.com）"
               name="url"
               required
             />
@@ -89,7 +90,7 @@ export function CreateUrlForm() {
             <InputGroupInput
               id="customCode"
               type="text"
-              placeholder="自訂代碼 (選填)"
+              placeholder="自訂代碼（選填）"
               name="customCode"
             />
             <InputGroupAddon>
@@ -101,7 +102,7 @@ export function CreateUrlForm() {
         <InputGroup className="flex-1">
           <InputGroupInput
             id="description"
-            placeholder="說明 (選填)"
+            placeholder="說明（選填）"
             name="description"
           />
           <InputGroupAddon>
@@ -127,7 +128,7 @@ export function CreateUrlForm() {
               ) : (
                 <ChevronDown className="h-4 w-4" />
               )}
-              進階設定 (密碼保護、過期時間)
+              進階設定（密碼保護、過期時間）
             </Button>
           </CollapsibleTrigger>
         </div>
@@ -135,7 +136,7 @@ export function CreateUrlForm() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="password" className="flex items-center gap-2">
-                <Lock className="h-4 w-4" /> 密碼保護 (選填)
+                <Lock className="h-4 w-4" /> 密碼保護（選填）
               </Label>
               <Input
                 id="password"
@@ -146,7 +147,7 @@ export function CreateUrlForm() {
             </div>
             <div className="flex flex-col space-y-2">
               <Label className="mb-2 flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4" /> 過期時間 (選填)
+                <CalendarIcon className="h-4 w-4" /> 過期時間（選填）
               </Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -172,11 +173,24 @@ export function CreateUrlForm() {
                   />
                 </PopoverContent>
               </Popover>
-              {/* Hidden input to submit the date via FormData if js is disabled? 
-                  Actually handleSubmit handles it manually. 
-                  But if we want it to work without JS (progressive enhancement), we need a hidden input.
-                  However, Calendar component requires JS. So manual handling in handleSubmit is fine.
-              */}
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="socialPreview"
+              name="socialPreview"
+              className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor="socialPreview"
+                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                啟用社群預覽（Social Preview）
+              </Label>
+              <p className="text-muted-foreground text-xs">
+                讓機器人抓取自訂標題（使用上方說明欄位），而不是直接重導向。
+              </p>
             </div>
           </div>
         </CollapsibleContent>

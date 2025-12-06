@@ -60,6 +60,7 @@ export const urls = sqliteTable("url", {
   description: text("description"),
   password: text("password"),
   expiresAt: integer("expires_at", { mode: "timestamp" }),
+  socialPreview: integer("social_preview", { mode: "boolean" }).default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
