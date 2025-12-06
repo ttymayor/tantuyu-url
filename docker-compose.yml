@@ -1,15 +1,17 @@
 services:
   app:
+    # Use an image from a registry (defined in .env) or fallback to local
+    image: ${DOCKER_IMAGE_NAME:-tantuyu-url:latest}
     build:
       context: .
       dockerfile: Dockerfile
     container_name: tantuyu-url
     restart: always
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      # Map Host Port (defined in .env or default 3000) -> Container Port (Fixed 3000)
+      - "${PORT:-3000}:3000"
     environment:
       - NODE_ENV=production
-      - PORT=${PORT:-3000}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - IPINFO_TOKEN=${IPINFO_TOKEN}

@@ -1,0 +1,15 @@
+/node_modules
+.git/
+next-env.d.ts
+.env
+.next/
+
+.gitignore
+
+.env
+.env.*
+*.local
+
+Dockerfile
+docker-compose.yml
+.dockerignore
