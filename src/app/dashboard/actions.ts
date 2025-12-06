@@ -34,11 +34,6 @@ function validateExpiresAt(expiresAtRaw: string): Date | null {
     return null;
   }
 
-  // 檢查日期不能是過去
-  if (date < new Date()) {
-    return null;
-  }
-
   return date;
 }
 
@@ -102,7 +97,7 @@ export async function shorten(formData: FormData) {
   if (expiresAtRaw) {
     const validatedDate = validateExpiresAt(expiresAtRaw);
     if (!validatedDate) {
-      return { error: "過期時間必須是未來的有效日期" };
+      return { error: "過期時間必須是有效日期" };
     }
     expiresAt = validatedDate;
   }

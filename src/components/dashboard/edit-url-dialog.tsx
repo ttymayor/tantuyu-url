@@ -24,6 +24,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface EditUrlDialogProps {
   url: {
@@ -56,6 +57,7 @@ export function EditUrlDialog({ url }: EditUrlDialogProps) {
     if (result.error) {
       setError(result.error);
     } else {
+      toast.success("URL updated successfully");
       setOpen(false);
     }
   }
