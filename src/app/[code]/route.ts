@@ -16,26 +16,27 @@ export async function GET(
   const record = await getUrlByCode(code);
 
   if (!record) {
-    return new Response("Not Found", { status: 404 });
+    return redirect("/404");
   }
 
   // Check Expiration
   if (record.expiresAt && new Date(record.expiresAt) < new Date()) {
-      return new Response("This URL has expired.", { status: 410 }); // 410 Gone
+    return redirect("/404");
   }
 
   // Don't record analytics for HEAD requests (previews, pinging)
   if (request.method === "HEAD") {
-      // For HEAD requests, we might still want to enforce password protection?
-      // Technically yes, but for simplicity let's redirect to login page if protected.
-      if (record.password) {
-         // We cannot easily render a page here.
-         // Redirect to password page path
-         const host = request.headers.get("host") || "";
-         const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-         return redirect(`${protocol}://${host}/p/${code}`);
-      }
-      return redirect(record.originalUrl);
+    // For HEAD requests, we might still want to enforce password protection?
+    // Technically yes, but for simplicity let's redirect to login page if protected.
+    if (record.password) {
+      // We cannot easily render a page here.
+      // Redirect to password page path
+      const host = request.headers.get("host") || "";
+      const protocol =
+        process.env.NODE_ENV === "development" ? "http" : "https";
+      return redirect(`${protocol}://${host}/p/${code}`);
+    }
+    return redirect(record.originalUrl);
   }
 
   // Don't record analytics for Next.js prefetches
@@ -50,21 +51,22 @@ export async function GET(
   if (isPrefetch) {
     // Even prefetch should not bypass password
     if (record.password) {
-         // Redirect to password page
-         const host = request.headers.get("host") || "";
-         const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-         return redirect(`${protocol}://${host}/p/${code}`);
+      // Redirect to password page
+      const host = request.headers.get("host") || "";
+      const protocol =
+        process.env.NODE_ENV === "development" ? "http" : "https";
+      return redirect(`${protocol}://${host}/p/${code}`);
     }
     return redirect(record.originalUrl);
   }
 
   // Check Password Protection
   if (record.password) {
-      // We need to redirect the user to a password entry page
-      // We will pass the target code as a param
-      const host = request.headers.get("host") || "";
-      const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-      return redirect(`${protocol}://${host}/p/${code}`);
+    // We need to redirect the user to a password entry page
+    // We will pass the target code as a param
+    const host = request.headers.get("host") || "";
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+    return redirect(`${protocol}://${host}/p/${code}`);
   }
 
   // --- Analytics Recording ---
