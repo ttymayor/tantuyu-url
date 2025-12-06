@@ -1,6 +1,6 @@
-import { getUrlByCode, recordClick } from "@/lib/url";
+import { getUrlByCode } from "@/lib/url";
+import { trackUrlVisit } from "@/lib/analytics";
 import { redirect } from "next/navigation";
-import { UAParser } from "ua-parser-js";
 
 export async function GET(
   request: Request,
@@ -21,7 +21,7 @@ export async function GET(
 
   // Check Expiration
   if (record.expiresAt && new Date(record.expiresAt) < new Date()) {
-    return redirect("/404");
+    return redirect("/link-expired");
   }
 
   // Don't record analytics for HEAD requests (previews, pinging)
@@ -70,57 +70,7 @@ export async function GET(
   }
 
   // --- Analytics Recording ---
-
-  // Parse User Agent
-  const uaString = request.headers.get("user-agent") || "";
-  const parser = new UAParser(uaString);
-  const result = parser.getResult();
-
-  const referrer = request.headers.get("referer") || null;
-
-  // Geo (IPinfo)
-  let country = null;
-  let city = null;
-  let latitude = null;
-  let longitude = null;
-
-  let ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "8.8.8.8";
-
-  if (ip === "::1" || ip === "127.0.0.1") {
-    ip = "8.8.8.8";
-  }
-
-  const token = process.env.IPINFO_TOKEN;
-
-  if (token) {
-    try {
-      const res = await fetch(`https://ipinfo.io/${ip}?token=${token}`);
-
-      if (res.ok) {
-        const data = await res.json();
-        country = data.country;
-        city = data.city;
-        if (data.loc) {
-          const [lat, lon] = data.loc.split(",");
-          latitude = parseFloat(lat);
-          longitude = parseFloat(lon);
-        }
-      }
-    } catch (e) {
-      console.error("Error fetching IP info:", e);
-    }
-  }
-
-  await recordClick(record.id, {
-    browser: result.browser.name || "Unknown",
-    device: result.device.type || "Desktop",
-    os: result.os.name || "Unknown",
-    country,
-    city,
-    latitude,
-    longitude,
-    referrer,
-  });
+  await trackUrlVisit(record.id, request.headers);
 
   return redirect(record.originalUrl);
 }

@@ -33,7 +33,9 @@ function CopyButton({ shortCode }: { shortCode: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    const fullUrl = `${window.location.origin}/${shortCode}`;
+    const BASE_URL =
+      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const fullUrl = `${BASE_URL}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -43,7 +45,7 @@ function CopyButton({ shortCode }: { shortCode: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className="h-6 w-6 cursor-pointer"
+      className="h-8 w-8 cursor-pointer"
       onClick={handleCopy}
     >
       {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -59,9 +61,9 @@ export function UrlTable({ urls }: UrlTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead className=""></TableHead>
-            <TableHead className="w-[200px]">Short Code</TableHead>
+            <TableHead className="w-[150px]">Short Code</TableHead>
             <TableHead className="max-w-[300px]">Original URL</TableHead>
-            <TableHead className="w-[100px] text-right">Clicks</TableHead>
+            <TableHead className="w-[50px] text-right">Clicks</TableHead>
             <TableHead className="w-[150px] text-right">Created At</TableHead>
           </TableRow>
         </TableHeader>
@@ -80,6 +82,7 @@ export function UrlTable({ urls }: UrlTableProps) {
               <TableRow key={url.id}>
                 <TableCell>
                   <div className="flex items-center justify-center gap-1">
+                    <CopyButton shortCode={url.shortCode} />
                     <Button
                       variant="ghost"
                       size="icon"
@@ -114,7 +117,6 @@ export function UrlTable({ urls }: UrlTableProps) {
                 <TableCell className="font-medium">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <CopyButton shortCode={url.shortCode} />
                       <Link
                         href={`/${url.shortCode}`}
                         className="text-primary font-mono hover:underline"
@@ -131,7 +133,15 @@ export function UrlTable({ urls }: UrlTableProps) {
                   className="max-w-[300px] truncate"
                   title={url.originalUrl}
                 >
-                  {url.originalUrl}
+                  <Link
+                    href={url.originalUrl}
+                    className="text-primary hover:underline"
+                    prefetch={false}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {url.originalUrl}
+                  </Link>
                 </TableCell>
                 <TableCell className="text-right">{url.clicks}</TableCell>
                 <TableCell
