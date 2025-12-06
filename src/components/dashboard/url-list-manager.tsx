@@ -16,7 +16,7 @@ export function UrlListManager() {
 
   const { data, error, isLoading, mutate } = useSWR(
     `/api/urls?page=${page}&limit=${limit}`,
-    fetcher
+    fetcher,
   );
 
   if (error) return <div>Failed to load</div>;
@@ -25,39 +25,41 @@ export function UrlListManager() {
     <div className="w-full max-w-4xl space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold">Recent URLs</h2>
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8" 
-                onClick={() => mutate()}
-                disabled={isLoading}
-            >
-                <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-                <span className="sr-only">Refresh</span>
-            </Button>
+          <h2 className="text-xl font-bold">Recent URLs</h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => mutate()}
+            disabled={isLoading}
+          >
+            <RefreshCcw
+              className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+            />
+            <span className="sr-only">Refresh</span>
+          </Button>
         </div>
         {isLoading && !data ? (
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
         ) : (
-            <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             Total: {data?.total || 0}
-            </span>
+          </span>
         )}
       </div>
 
       {isLoading && !data ? (
-          <div className="flex h-48 items-center justify-center border rounded-md">
-             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+        <div className="flex h-48 items-center justify-center rounded-md border">
+          <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+        </div>
       ) : (
         <>
-            <UrlTable urls={data?.urls || []} />
-            <PaginationControls
-                totalItems={data?.total || 0}
-                currentPage={page}
-                limit={limit}
-            />
+          <UrlTable urls={data?.urls || []} />
+          <PaginationControls
+            totalItems={data?.total || 0}
+            currentPage={page}
+            limit={limit}
+          />
         </>
       )}
     </div>

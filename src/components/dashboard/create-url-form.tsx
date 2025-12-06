@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -37,11 +37,12 @@ export function CreateUrlForm() {
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>();
+  const formRef = useRef<HTMLFormElement>(null);
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     setError(null);
-    
+
     if (date) {
       // Append date to formData in ISO format or however the server expects it
       // The server action expects "expiresAt" string which is parsed by new Date()
@@ -49,24 +50,21 @@ export function CreateUrlForm() {
       formData.set("expiresAt", date.toISOString());
     }
 
-    const result = await shorten(null, formData);
+    const result = await shorten(formData);
     setLoading(false);
 
     if (result?.error) {
       setError(result.error);
     } else {
-      // clear form
-      const form = document.getElementById(
-        "create-url-form",
-      ) as HTMLFormElement;
-      if (form) form.reset();
-      setDate(undefined); // Reset date
-      setIsOpen(false); // Close advanced options on success
+      if (formRef.current) formRef.current.reset();
+      setDate(undefined);
+      setIsOpen(false);
     }
   }
 
   return (
     <form
+      ref={formRef}
       id="create-url-form"
       action={handleSubmit}
       className="flex w-full max-w-2xl flex-col gap-4"
@@ -152,8 +150,8 @@ export function CreateUrlForm() {
                 placeholder="設定存取密碼"
               />
             </div>
-            <div className="space-y-2 flex flex-col">
-              <Label className="flex items-center gap-2 mb-2">
+            <div className="flex flex-col space-y-2">
+              <Label className="mb-2 flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" /> 過期時間 (選填)
               </Label>
               <Popover>
@@ -162,7 +160,7 @@ export function CreateUrlForm() {
                     variant={"outline"}
                     className={cn(
                       "w-full pl-3 text-left font-normal",
-                      !date && "text-muted-foreground"
+                      !date && "text-muted-foreground",
                     )}
                   >
                     {date ? format(date, "PPP") : <span>Pick a date</span>}

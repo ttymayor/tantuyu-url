@@ -16,51 +16,56 @@ interface AnalyticsViewProps {
 export function AnalyticsView({ urlId }: AnalyticsViewProps) {
   const { data, error, isLoading, mutate } = useSWR(
     `/api/analytics/${urlId}`,
-    fetcher
+    fetcher,
   );
 
   if (error) return <div>Failed to load analytics</div>;
   if (isLoading && !data) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4 w-full max-w-6xl mx-auto">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" asChild>
+          <Button variant="outline" size="icon" asChild>
             <Link href="/dashboard">
-                <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4" />
             </Link>
-            </Button>
-            <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-                Analytics: <span className="font-mono text-primary">/{data.urlInfo.shortCode}</span>
+          </Button>
+          <div className="flex flex-col gap-1">
+            <h1 className="flex items-center gap-2 text-2xl font-bold">
+              Analytics:{" "}
+              <span className="text-primary font-mono">
+                /{data.urlInfo.shortCode}
+              </span>
             </h1>
-            <p className="text-sm text-muted-foreground truncate max-w-lg">
-                {data.urlInfo.originalUrl}
+            <p className="text-muted-foreground max-w-lg truncate text-sm">
+              {data.urlInfo.originalUrl}
             </p>
-            </div>
+          </div>
         </div>
-        <Button 
-            variant="outline" 
-            size="sm" 
-            className="gap-2"
-            onClick={() => mutate()}
-            disabled={isLoading}
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => mutate()}
+          disabled={isLoading}
         >
-            <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+          <RefreshCcw
+            className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+          />
+          Refresh
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <div className="text-sm font-medium text-muted-foreground">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="bg-card text-card-foreground rounded-lg border p-6 shadow-sm">
+          <div className="text-muted-foreground text-sm font-medium">
             Total Clicks
           </div>
           <div className="text-2xl font-bold">{data.eventsCount}</div>

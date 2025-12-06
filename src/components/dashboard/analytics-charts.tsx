@@ -22,8 +22,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from "@/components/ui/chart";
 
 interface AnalyticsData {
@@ -98,15 +96,15 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {/* Devices Pie Chart */}
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>Device Distribution</CardTitle>
           <CardDescription>Clicks by device type</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 pb-0">
           <ChartContainer
             config={deviceChartConfig}
-            className="min-h-[300px] w-full"
+            className="mx-auto aspect-square max-h-[250px]"
           >
             <PieChart>
               <ChartTooltip
@@ -154,20 +152,6 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
                   }}
                 />
               </Pie>
-              <ChartLegend
-                content={
-                  <ChartLegendContent
-                    nameKey="name"
-                    payload={deviceData.map((item) => ({
-                      value: item.name,
-                      dataKey: "value",
-                      color: item.fill,
-                      payload: item,
-                    }))}
-                  />
-                }
-                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-              />
             </PieChart>
           </ChartContainer>
         </CardContent>
@@ -180,31 +164,26 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
           <CardDescription>Clicks by browser</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer
-            config={browserChartConfig}
-            className="min-h-[300px] w-full"
-          >
-            <BarChart
-              accessibilityLayer
-              data={browserData}
-              layout="vertical"
-              margin={{ left: 0, right: 0 }}
-            >
-              <CartesianGrid horizontal={false} />
-              <YAxis
+          <ChartContainer config={browserChartConfig}>
+            <BarChart accessibilityLayer data={browserData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
                 dataKey="name"
-                type="category"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                hide
               />
-              <XAxis dataKey="value" type="number" hide />
+              <YAxis dataKey="value" type="number" hide />
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent hideLabel nameKey="name" />}
+                content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="value" fill="var(--color-value)" radius={5}>
+              <Bar
+                dataKey="value"
+                fill="var(--color-value)"
+                radius={8}
+                strokeWidth={2}
+              >
                 <Label
                   content={(props) => {
                     if (!props || typeof props !== "object") return null;
@@ -251,10 +230,7 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
           <CardDescription>Clicks by OS</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer
-            config={osChartConfig}
-            className="min-h-[300px] w-full"
-          >
+          <ChartContainer config={osChartConfig}>
             <BarChart accessibilityLayer data={data.os}>
               <CartesianGrid vertical={false} />
               <XAxis
@@ -262,13 +238,17 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tickFormatter={(value) => value.slice(0, 3)}
               />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="value" fill="var(--color-value)" radius={5} />
+              <Bar
+                dataKey="value"
+                fill="var(--color-value)"
+                radius={8}
+                strokeWidth={2}
+              />
             </BarChart>
           </ChartContainer>
         </CardContent>
@@ -281,31 +261,26 @@ export function AnalyticsCharts({ data }: { data: AnalyticsData }) {
           <CardDescription>Clicks by country</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer
-            config={countryChartConfig}
-            className="min-h-[300px] w-full"
-          >
-            <BarChart
-              accessibilityLayer
-              data={data.countries}
-              layout="vertical"
-              margin={{ left: 0, right: 0 }}
-            >
-              <CartesianGrid horizontal={false} />
-              <YAxis
+          <ChartContainer config={countryChartConfig}>
+            <BarChart accessibilityLayer data={data.countries}>
+              <CartesianGrid vertical={false} />
+              <XAxis
                 dataKey="name"
-                type="category"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                width={80}
               />
-              <XAxis dataKey="value" type="number" hide />
+              <YAxis dataKey="value" type="number" hide />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="value" fill="var(--color-value)" radius={5} />
+              <Bar
+                dataKey="value"
+                fill="var(--color-value)"
+                radius={8}
+                strokeWidth={2}
+              />
             </BarChart>
           </ChartContainer>
         </CardContent>

@@ -5,7 +5,6 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
@@ -44,15 +43,15 @@ export function PaginationControls({
   const handleLimitChange = (newLimit: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("limit", newLimit);
-    params.set("page", "1"); // Reset to page 1 when limit changes
+    params.set("page", "1");
     router.push(`?${params.toString()}`);
   };
 
   if (totalItems === 0) return null;
 
   return (
-    <div className="flex items-center justify-between w-full py-4">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="flex w-full items-center justify-between py-4">
+      <div className="text-muted-foreground flex items-center gap-2 text-sm">
         <span>Rows per page:</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -76,48 +75,55 @@ export function PaginationControls({
         </DropdownMenu>
       </div>
 
-      <div className="flex-1 flex justify-end">
-         <Pagination>
-            <PaginationContent>
-                <PaginationItem>
-                    <PaginationPrevious 
-                        href="#" 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (currentPage > 1) handlePageChange(currentPage - 1);
-                        }}
-                        aria-disabled={currentPage <= 1}
-                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                </PaginationItem>
-                
-                {/* Simplified pagination for now: Just showing current page context if needed, 
+      <div className="flex flex-1 justify-end">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage > 1) handlePageChange(currentPage - 1);
+                }}
+                aria-disabled={currentPage <= 1}
+                className={
+                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
+
+            {/* Simplified pagination for now: Just showing current page context if needed, 
                     but shadcn pagination typically lists numbers. 
                     For brevity, I'll show just prev/next and maybe current page? 
                     Let's render a simple range or just prev/next + text for now to avoid complex logic.
                     Actually, let's just show Page X of Y text in the middle?
                     Standard UI usually lists numbers. Let's do a simple numbered list if totalPages <= 5.
                 */}
-                
-                <PaginationItem>
-                    <span className="flex h-9 items-center justify-center px-4 text-sm font-medium">
-                        Page {currentPage} of {totalPages}
-                    </span>
-                </PaginationItem>
 
-                <PaginationItem>
-                    <PaginationNext
-                        href="#"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (currentPage < totalPages) handlePageChange(currentPage + 1);
-                        }}
-                        aria-disabled={currentPage >= totalPages}
-                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
-                    />
-                </PaginationItem>
-            </PaginationContent>
-         </Pagination>
+            <PaginationItem>
+              <span className="flex h-9 items-center justify-center px-4 text-sm font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+            </PaginationItem>
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage < totalPages)
+                    handlePageChange(currentPage + 1);
+                }}
+                aria-disabled={currentPage >= totalPages}
+                className={
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
