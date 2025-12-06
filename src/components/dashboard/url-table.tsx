@@ -118,11 +118,6 @@ export function UrlTable({ urls }: UrlTableProps) {
                         {url.shortCode}
                       </Link>
                     </div>
-                    {url.description && (
-                      <span className="text-muted-foreground max-w-[180px] truncate text-xs">
-                        {url.description}
-                      </span>
-                    )}
                   </div>
                 </TableCell>
                 <TableCell

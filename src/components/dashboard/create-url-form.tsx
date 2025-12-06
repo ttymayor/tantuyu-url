@@ -13,6 +13,8 @@ import {
   ChevronUp,
   CalendarIcon,
   Lock,
+  Hash,
+  Pen,
 } from "lucide-react";
 import { shorten } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
@@ -70,37 +72,42 @@ export function CreateUrlForm() {
       className="flex w-full max-w-2xl flex-col gap-4"
     >
       <div className="flex w-full flex-col gap-2">
-        <InputGroup className="w-full">
-          <InputGroupInput
-            id="shortUrl"
-            type="url"
-            placeholder="輸入網址 (e.g. https://example.com)"
-            name="url"
-            required
-          />
-          <InputGroupAddon>
-            <LinkIcon />
-          </InputGroupAddon>
-        </InputGroup>
-
-        <div className="flex w-full flex-col gap-2 sm:flex-row">
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-2">
           <InputGroup className="flex-1">
+            <InputGroupInput
+              id="shortUrl"
+              type="url"
+              placeholder="輸入網址 (e.g. https://example.com)"
+              name="url"
+              required
+            />
+            <InputGroupAddon>
+              <LinkIcon />
+            </InputGroupAddon>
+          </InputGroup>
+          <InputGroup className="w-auto sm:w-1/4">
             <InputGroupInput
               id="customCode"
               type="text"
               placeholder="自訂代碼 (選填)"
               name="customCode"
             />
-          </InputGroup>
-          <InputGroup className="flex-1">
-            <InputGroupInput
-              id="description"
-              type="text"
-              placeholder="說明 (選填)"
-              name="description"
-            />
+            <InputGroupAddon>
+              <Hash />
+            </InputGroupAddon>
           </InputGroup>
         </div>
+
+        <InputGroup className="flex-1">
+          <InputGroupInput
+            id="description"
+            placeholder="說明 (選填)"
+            name="description"
+          />
+          <InputGroupAddon>
+            <Pen />
+          </InputGroupAddon>
+        </InputGroup>
       </div>
 
       <Collapsible
@@ -108,12 +115,12 @@ export function CreateUrlForm() {
         onOpenChange={setIsOpen}
         className="w-full space-y-2"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-between sm:flex-row">
           <CollapsibleTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              className="text-muted-foreground flex w-full items-center justify-center gap-2 sm:w-auto sm:justify-start"
+              className="text-muted-foreground flex w-full cursor-pointer items-center justify-center gap-2 sm:w-auto sm:justify-start"
             >
               {isOpen ? (
                 <ChevronUp className="h-4 w-4" />
@@ -123,19 +130,6 @@ export function CreateUrlForm() {
               進階設定 (密碼保護、過期時間)
             </Button>
           </CollapsibleTrigger>
-          <Button
-            type="submit"
-            disabled={loading}
-            size="sm"
-            className="w-full sm:w-auto"
-          >
-            {loading ? (
-              <Hammer className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Hammer className="mr-2 h-4 w-4" />
-            )}
-            建立短網址
-          </Button>
         </div>
         <CollapsibleContent className="bg-muted/20 space-y-4 rounded-md border p-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -175,7 +169,6 @@ export function CreateUrlForm() {
                     disabled={(date) =>
                       date < new Date() || date < new Date("1900-01-01")
                     }
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -188,6 +181,19 @@ export function CreateUrlForm() {
           </div>
         </CollapsibleContent>
       </Collapsible>
+      <Button
+        type="submit"
+        disabled={loading}
+        size="sm"
+        className="w-full cursor-pointer sm:w-auto"
+      >
+        {loading ? (
+          <Hammer className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Hammer className="mr-2 h-4 w-4" />
+        )}
+        建立短網址
+      </Button>
 
       {error && <p className="px-1 text-sm text-red-500">{error}</p>}
     </form>

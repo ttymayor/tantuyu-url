@@ -48,34 +48,7 @@ export function EditUrlDialog({ url }: EditUrlDialogProps) {
     setLoading(true);
     setError(null);
 
-    if (date) {
-      formData.set("expiresAt", date.toISOString());
-    } else {
-      // If date is undefined (cleared), we need to explicitly send empty string or something to indicate removal?
-      // The server action checks `expiresAtRaw ? new Date(expiresAtRaw) : undefined`.
-      // If we don't set it, it might be undefined in formData.get() (returns null).
-      // If we want to clear it, we should probably send an empty string if the intention is to clear.
-      // But the current server logic: `expiresAt: expiresAtRaw ? new Date(expiresAtRaw) : undefined`
-      // If it's undefined, it keeps it as undefined (which might mean "don't change" in some update logics, but here it's passed to `db.update`).
-      // Wait, `db.update` replaces the value.
-      // So `undefined` in the update object might be ignored by drizzle or set to null?
-      // Drizzle `update(table).set({...})` keys with `undefined` are usually ignored.
-      // Keys with `null` set the column to NULL.
-      // Our server action does: `expiresAt: expiresAtRaw ? new Date(expiresAtRaw) : undefined`.
-      // If `expiresAtRaw` is missing/empty, it passes `undefined`.
-      // So Drizzle ignores it, meaning the old value persists.
-      // This is a bug if we want to remove the expiration date!
-
-      // FIX: If user cleared the date, we need to pass null to the DB.
-      // Let's make sure the server action handles "clearing".
-      // For now, if `date` is undefined, let's assume we want to clear it if it was previously set.
-      // But `formData` behavior: if I don't append it, it's null.
-      // We need to signal "remove date".
-      // Let's append an empty string if date is undefined.
-      if (!date) {
-        formData.set("expiresAt", "");
-      }
-    }
+    if (date) formData.set("expiresAt", date.toISOString());
 
     const result = await updateUrlAction(url.id, formData);
 
@@ -90,7 +63,7 @@ export function EditUrlDialog({ url }: EditUrlDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
           <Pencil className="h-4 w-4" />
           <span className="sr-only">Edit</span>
         </Button>
@@ -179,11 +152,15 @@ export function EditUrlDialog({ url }: EditUrlDialogProps) {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" type="button">
+              <Button
+                variant="outline"
+                type="button"
+                className="cursor-pointer"
+              >
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="cursor-pointer">
               {loading ? "Saving..." : "Save changes"}
             </Button>
           </DialogFooter>
