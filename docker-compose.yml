@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tantuyu-url
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - IPINFO_TOKEN=${IPINFO_TOKEN}
+      # Use a path inside the mounted volume
+      - DB_FILE_NAME=/app/data/sqlite.db
+    volumes:
+      - ./data:/app/data
+    # Run migrations on startup to ensure tables exist
+    command: sh -c "npx drizzle-kit push && node server.js"
