@@ -13,8 +13,11 @@ import { NavUser } from "@/components/nav/NavUser";
 import { NavMain } from "@/components/nav/NavMain";
 import { Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = authClient.useSession();
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -36,9 +39,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser
-          user={{ name: "admid", email: "admin@example.com", avatar: "admin" }}
-        ></NavUser>
+        {session?.user && (
+            <NavUser
+            user={{ 
+                name: session.user.name || "User", 
+                email: session.user.email || "", 
+                avatar: session.user.image || "" 
+            }}
+            />
+        )}
       </SidebarFooter>
     </Sidebar>
   );

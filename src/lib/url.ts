@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
-import { urls } from "@/db/schema";
+import { urls, urlEvents } from "@/db/schema";
 import { nanoid } from "nanoid";
 import { eq, sql, and, ne, desc, count } from "drizzle-orm";
 
-export const createShortUrl = async (originalUrl: string, userId?: string, customCode?: string) => {
+export const createShortUrl = async (originalUrl: string, userId?: string, customCode?: string, options?: { description?: string; password?: string; expiresAt?: Date }) => {
   const shortCode = customCode || nanoid(6);
   
   if (customCode) {
@@ -19,6 +19,9 @@ export const createShortUrl = async (originalUrl: string, userId?: string, custo
     shortCode,
     userId: userId || null,
     clicks: 0,
+    description: options?.description || null,
+    password: options?.password || null,
+    expiresAt: options?.expiresAt || null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -31,7 +34,12 @@ export const getUrlByCode = async (code: string) => {
   return result[0];
 };
 
-export const updateShortUrl = async (id: string, userId: string, data: { originalUrl: string; shortCode: string }) => {
+export const getUrlById = async (id: string) => {
+  const result = await db.select().from(urls).where(eq(urls.id, id)).limit(1);
+  return result[0];
+};
+
+export const updateShortUrl = async (id: string, userId: string, data: { originalUrl: string; shortCode: string; description?: string | null; password?: string | null; expiresAt?: Date | null }) => {
   const [existing] = await db.select().from(urls).where(eq(urls.id, id)).limit(1);
   
   if (!existing) {
@@ -58,18 +66,41 @@ export const updateShortUrl = async (id: string, userId: string, data: { origina
     .set({
       originalUrl: data.originalUrl,
       shortCode: data.shortCode,
+      description: data.description || null,
+      password: data.password || null,
+      expiresAt: data.expiresAt || null,
       updatedAt: new Date(),
     })
     .where(eq(urls.id, id));
 };
 
-export const incrementClicks = async (id: string) => {
-  await db.update(urls)
-    .set({ 
+export const recordClick = async (
+  urlId: string,
+  data: {
+    browser?: string | null;
+    device?: string | null;
+    os?: string | null;
+    country?: string | null;
+    city?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    referrer?: string | null;
+  }
+) => {
+  await db.insert(urlEvents).values({
+    id: nanoid(),
+    urlId,
+    ...data,
+    createdAt: new Date(),
+  });
+
+  await db
+    .update(urls)
+    .set({
       clicks: sql`clicks + 1`,
-      updatedAt: new Date() 
+      updatedAt: new Date(),
     })
-    .where(eq(urls.id, id));
+    .where(eq(urls.id, urlId));
 };
 
 export const getUserUrls = async (userId: string, page: number = 1, pageSize: number = 10) => {
@@ -89,4 +120,9 @@ export const getUserUrlsCount = async (userId: string) => {
     .from(urls)
     .where(eq(urls.userId, userId));
   return result?.count || 0;
+};
+
+export const getUrlAnalytics = async (urlId: string) => {
+    const events = await db.select().from(urlEvents).where(eq(urlEvents.urlId, urlId));
+    return events;
 };

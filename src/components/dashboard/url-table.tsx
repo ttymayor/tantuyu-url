@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/table";
 import { EditUrlDialog } from "@/components/dashboard/edit-url-dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, BarChart2 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
 interface UrlTableProps {
   urls: {
@@ -21,6 +22,9 @@ interface UrlTableProps {
     shortCode: string;
     clicks: number;
     createdAt: Date;
+    description?: string | null;
+    password?: string | null;
+    expiresAt?: Date | null;
   }[];
 }
 
@@ -31,7 +35,6 @@ function CopyButton({ shortCode }: { shortCode: string }) {
     const fullUrl = `${window.location.origin}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
-    toast.success("URL copied to clipboard");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -39,7 +42,7 @@ function CopyButton({ shortCode }: { shortCode: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className="h-6 w-6"
+      className="h-6 w-6 cursor-pointer"
       onClick={handleCopy}
     >
       {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -54,11 +57,11 @@ export function UrlTable({ urls }: UrlTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className=""></TableHead>
             <TableHead className="w-[200px]">Short Code</TableHead>
-            <TableHead className="max-w-[400px]">Original URL</TableHead>
+            <TableHead className="max-w-[300px]">Original URL</TableHead>
             <TableHead className="w-[100px] text-right">Clicks</TableHead>
-            <TableHead className="w-[200px] text-right">Created At</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="w-[150px] text-right">Created At</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -74,37 +77,68 @@ export function UrlTable({ urls }: UrlTableProps) {
           ) : (
             urls.map((url) => (
               <TableRow key={url.id}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={`/${url.shortCode}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary font-mono hover:underline"
+                <TableCell>
+                  <div className="flex items-center justify-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      asChild
                     >
-                      {url.shortCode}
-                    </a>
-                    <CopyButton shortCode={url.shortCode} />
+                      <Link href={`/dashboard/analytics/${url.id}`}>
+                        <BarChart2 className="h-4 w-4" />
+                        <span className="sr-only">Analytics</span>
+                      </Link>
+                    </Button>
+                    <EditUrlDialog
+                      url={{
+                        id: url.id,
+                        originalUrl: url.originalUrl,
+                        shortCode: url.shortCode,
+                        description: url.description,
+                        password: url.password,
+                        expiresAt: url.expiresAt
+                          ? new Date(url.expiresAt)
+                          : null,
+                      }}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <CopyButton shortCode={url.shortCode} />
+                      <Link
+                        href={`/${url.shortCode}`}
+                        className="text-primary font-mono hover:underline"
+                        prefetch={false}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {url.shortCode}
+                      </Link>
+                    </div>
+                    {url.description && (
+                      <span className="text-muted-foreground max-w-[180px] truncate text-xs">
+                        {url.description}
+                      </span>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell
-                  className="max-w-[400px] truncate"
+                  className="max-w-[300px] truncate"
                   title={url.originalUrl}
                 >
                   {url.originalUrl}
                 </TableCell>
                 <TableCell className="text-right">{url.clicks}</TableCell>
-                <TableCell className="text-right">
-                  {url.createdAt.toLocaleString()}
-                </TableCell>
-                <TableCell>
-                  <EditUrlDialog
-                    url={{
-                      id: url.id,
-                      originalUrl: url.originalUrl,
-                      shortCode: url.shortCode,
-                    }}
-                  />
+                <TableCell
+                  className="text-right"
+                  title={new Date(url.createdAt).toLocaleString()}
+                >
+                  {formatDistanceToNow(new Date(url.createdAt), {
+                    addSuffix: true,
+                  })}
                 </TableCell>
               </TableRow>
             ))

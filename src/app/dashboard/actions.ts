@@ -15,45 +15,61 @@ function isValidUrl(urlString: string) {
 }
 
 export async function shorten(prevState: any, formData: FormData) {
-    const url = formData.get("url") as string;
-    const customCode = formData.get("customCode") as string;
-    
-    if (!url) return { error: "URL is required" };
-    if (!isValidUrl(url)) return { error: "Invalid URL format" };
+  const url = formData.get("url") as string;
+  const customCode = formData.get("customCode") as string;
+  const description = formData.get("description") as string;
+  const password = formData.get("password") as string;
+  const expiresAtRaw = formData.get("expiresAt") as string;
 
-    const session = await auth.api.getSession({
-        headers: await headers(),
+  if (!url) return { error: "URL is required" };
+  if (!isValidUrl(url)) return { error: "Invalid URL format" };
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    await createShortUrl(url, session.user.id, customCode || undefined, {
+      description: description || undefined,
+      password: password || undefined,
+      expiresAt: expiresAtRaw ? new Date(expiresAtRaw) : undefined,
     });
-
-    if (!session) return { error: "Unauthorized" };
-
-    try {
-        await createShortUrl(url, session.user.id, customCode || undefined);
-        revalidatePath("/dashboard");
-        return { success: true };
-    } catch (e: any) {
-        return { error: e.message };
-    }
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }
 
 export async function updateUrlAction(id: string, formData: FormData) {
-    const url = formData.get("url") as string;
-    const shortCode = formData.get("shortCode") as string;
-    
-    if (!url || !shortCode) return { error: "URL and Short Code are required" };
-    if (!isValidUrl(url)) return { error: "Invalid URL format" };
+  const url = formData.get("url") as string;
+  const shortCode = formData.get("shortCode") as string;
+  const description = formData.get("description") as string;
+  const password = formData.get("password") as string;
+  const expiresAtRaw = formData.get("expiresAt") as string;
 
-    const session = await auth.api.getSession({
-        headers: await headers(),
+  if (!url || !shortCode) return { error: "URL and Short Code are required" };
+  if (!isValidUrl(url)) return { error: "Invalid URL format" };
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    await updateShortUrl(id, session.user.id, {
+      originalUrl: url,
+      shortCode,
+      description: description || null, // Pass null to clear
+      password: password || null,       // Pass null to clear
+      expiresAt: expiresAtRaw ? new Date(expiresAtRaw) : null, // Pass null to clear
     });
-
-    if (!session) return { error: "Unauthorized" };
-
-    try {
-        await updateShortUrl(id, session.user.id, { originalUrl: url, shortCode });
-        revalidatePath("/dashboard");
-        return { success: true };
-    } catch (e: any) {
-        return { error: e.message };
-    }
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }

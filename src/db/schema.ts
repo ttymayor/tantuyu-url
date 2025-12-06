@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, real } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 // --- Auth Tables (Better Auth Standard Schema) ---
@@ -57,6 +57,9 @@ export const urls = sqliteTable("url", {
   shortCode: text("short_code").notNull().unique(),
   userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
   clicks: integer("clicks").default(0).notNull(),
+  description: text("description"),
+  password: text("password"),
+  expiresAt: integer("expires_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
@@ -67,4 +70,22 @@ export const urls = sqliteTable("url", {
 }, (table) => ({
   shortCodeIdx: index("idx_url_short_code").on(table.shortCode),
   userIdIdx: index("idx_url_user_id").on(table.userId),
+}));
+
+export const urlEvents = sqliteTable("url_event", {
+  id: text("id").primaryKey(),
+  urlId: text("url_id").notNull().references(() => urls.id, { onDelete: "cascade" }),
+  browser: text("browser"),
+  device: text("device"),
+  os: text("os"),
+  country: text("country"),
+  city: text("city"),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  referrer: text("referrer"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+}, (table) => ({
+  urlIdIdx: index("idx_event_url_id").on(table.urlId),
 }));
