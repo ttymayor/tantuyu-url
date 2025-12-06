@@ -25,52 +25,23 @@ export async function GET(
     return redirect("/link-expired");
   }
 
-  // Don't record analytics for HEAD requests (previews, pinging)
-  if (request.method === "HEAD") {
-    // For HEAD requests, we might still want to enforce password protection?
-    // Technically yes, but for simplicity let's redirect to login page if protected.
-    if (record.password) {
-      // We cannot easily render a page here.
-      // Redirect to password page path
-      return redirect(constructUrl(`/p/${code}`));
-    }
-    return redirect(record.originalUrl);
-  }
-
-  // Don't record analytics for Next.js prefetches
-  const purpose =
-    request.headers.get("purpose") || request.headers.get("sec-purpose");
-  const isPrefetch =
-    request.headers.get("next-router-prefetch") === "1" ||
-    request.headers.get("x-next-router-prefetch") === "1" ||
-    request.headers.get("x-middleware-prefetch") === "1" ||
-    purpose === "prefetch";
-
-  if (isPrefetch) {
-    // Even prefetch should not bypass password
-    if (record.password) {
-      // Redirect to password page
-      return redirect(constructUrl(`/p/${code}`));
-    }
-    return redirect(record.originalUrl);
-  }
-
   // Check Password Protection
   if (record.password) {
-    // We need to redirect the user to a password entry page
-    // We will pass the target code as a param
     return redirect(constructUrl(`/p/${code}`));
   }
 
   // --- Social Preview Interception ---
   if (record.socialPreview) {
     const ua = request.headers.get("user-agent") || "";
-    const isBot = /facebookexternalhit|twitterbot|slackbot|whatsapp|telegrambot|discordbot|linkedinbot|pinterest|skypeuripreview/i.test(ua);
+    const isBot =
+      /facebookexternalhit|twitterbot|slackbot|whatsapp|telegrambot|discordbot|linkedinbot|pinterest|skypeuripreview/i.test(
+        ua,
+      );
 
     if (isBot) {
       const title = record.description || "Short URL";
       const description = `Click to visit ${record.originalUrl}`;
-      
+
       const html = `
         <!DOCTYPE html>
         <html lang="en">

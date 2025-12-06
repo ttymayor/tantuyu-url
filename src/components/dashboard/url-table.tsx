@@ -26,7 +26,9 @@ interface UrlTableProps {
     description?: string | null;
     password?: string | null;
     expiresAt?: Date | null;
+    socialPreview: boolean;
   }[];
+  mutate: () => void;
 }
 
 function CopyButton({ shortCode }: { shortCode: string }) {
@@ -53,13 +55,13 @@ function CopyButton({ shortCode }: { shortCode: string }) {
   );
 }
 
-export function UrlTable({ urls }: UrlTableProps) {
+export function UrlTable({ urls, mutate }: UrlTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className=""></TableHead>
+            <TableHead className="w-[50px]"></TableHead>
             <TableHead className="w-[150px]">Short Code</TableHead>
             <TableHead className="max-w-[300px]">Original URL</TableHead>
             <TableHead className="w-[50px] text-right">Clicks</TableHead>
@@ -103,13 +105,16 @@ export function UrlTable({ urls }: UrlTableProps) {
                         expiresAt: url.expiresAt
                           ? new Date(url.expiresAt)
                           : null,
+                        socialPreview: url.socialPreview,
                       }}
+                      mutate={mutate}
                     />
                     <DeleteUrlDialog
                       url={{
                         id: url.id,
                         shortCode: url.shortCode,
                       }}
+                      mutate={mutate}
                     />
                   </div>
                 </TableCell>

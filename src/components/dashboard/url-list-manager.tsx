@@ -54,7 +54,7 @@ export function UrlListManager() {
         </div>
       ) : (
         <>
-          <UrlTable urls={data?.urls || []} />
+          <UrlTable urls={data?.urls || []} mutate={mutate} />
           <PaginationControls
             totalItems={data?.total || 0}
             currentPage={page}
