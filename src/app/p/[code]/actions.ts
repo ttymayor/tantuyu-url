@@ -1,7 +1,6 @@
 "use server";
 
 import { getUrlByCode, recordClick } from "@/lib/url";
-import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { UAParser } from "ua-parser-js";
 
@@ -10,13 +9,13 @@ export async function verifyPassword(code: string, formData: FormData) {
   const record = await getUrlByCode(code);
 
   if (!record) {
-    return { error: "URL not found" };
+    return { error: "網址不存在" };
   }
 
   if (record.password !== inputPassword) {
-    return { error: "Incorrect password" };
+    return { error: "密碼不正確" };
   }
-  
+
   // Password correct. We should record the click now because we are about to redirect.
   // However, `recordClick` logic is duplicated here from `route.ts`.
   // Ideally we extract the analytics logic to a shared function but it depends on `request`.
