@@ -1,4 +1,17 @@
 services:
+  caddy:
+    image: caddy:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
   app:
     # Use an image from a registry (defined in .env) or fallback to local
     image: ${DOCKER_IMAGE_NAME:-tantuyu-url:latest}
@@ -7,13 +20,13 @@ services:
       dockerfile: Dockerfile
     container_name: tantuyu-url
     restart: always
-    ports:
-      # Map Host Port (defined in .env or default 3000) -> Container Port (Fixed 3000)
-      - "${PORT:-3000}:3000"
+    # Ports are no longer exposed directly to host. Caddy handles ingress.
+    # ports:
+    #   - "${PORT:-3000}:3000"
     environment:
       - NODE_ENV=production
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - BETTER_AUTH_URL=https://${DOMAIN_NAME}
       - IPINFO_TOKEN=${IPINFO_TOKEN}
       # Use a path inside the mounted volume
       - DB_FILE_NAME=/app/data/sqlite.db
@@ -21,3 +34,7 @@ services:
       - ./data:/app/data
     # Run migrations on startup to ensure tables exist
     command: sh -c "npx drizzle-kit push && node server.js"
+
+volumes:
+  caddy_data:
+  caddy_config:
