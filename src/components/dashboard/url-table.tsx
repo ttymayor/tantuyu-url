@@ -15,6 +15,7 @@ import { Copy, Check, BarChart2 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 interface UrlTableProps {
   urls: {
@@ -35,9 +36,16 @@ function CopyButton({ shortCode }: { shortCode: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+    if (!BASE_URL) {
+      toast.error("Copy URL failed");
+      return;
+    }
+
     const fullUrl = `${BASE_URL}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
+    toast.success("URL copied to clipboard");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

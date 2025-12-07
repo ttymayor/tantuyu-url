@@ -52,7 +52,6 @@ export function PaginationControls({
   return (
     <div className="flex w-full items-center justify-between py-4">
       <div className="text-muted-foreground flex items-center gap-2 text-sm">
-        <span>Rows per page:</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -91,14 +90,6 @@ export function PaginationControls({
                 }
               />
             </PaginationItem>
-
-            {/* Simplified pagination for now: Just showing current page context if needed, 
-                    but shadcn pagination typically lists numbers. 
-                    For brevity, I'll show just prev/next and maybe current page? 
-                    Let's render a simple range or just prev/next + text for now to avoid complex logic.
-                    Actually, let's just show Page X of Y text in the middle?
-                    Standard UI usually lists numbers. Let's do a simple numbered list if totalPages <= 5.
-                */}
 
             <PaginationItem>
               <span className="flex h-9 items-center justify-center px-4 text-sm font-medium">
