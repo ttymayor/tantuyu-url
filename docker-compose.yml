@@ -14,6 +14,7 @@ services:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=https://${DOMAIN_NAME}
       - IPINFO_TOKEN=${IPINFO_TOKEN}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
       - DB_FILE_NAME=/app/data/sqlite.db
     volumes:
       - ./data:/app/data
