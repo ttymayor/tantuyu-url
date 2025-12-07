@@ -10,7 +10,11 @@ export async function GET(
   const code = (await params).code;
 
   // Ignore common bot/browser files that might slip through
-  if (code === "favicon.ico" || code === "robots.txt") {
+  if (
+    code === "favicon.ico" ||
+    code === "robots.txt" ||
+    code === "sitemap.xml"
+  ) {
     return new Response("Not Found", { status: 404 });
   }
 

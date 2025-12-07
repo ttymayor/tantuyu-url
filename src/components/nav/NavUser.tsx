@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleUserRound, LogOut, EllipsisVertical, User } from "lucide-react";
+import { Settings, LogOut, EllipsisVertical, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,6 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -39,6 +40,8 @@ export function NavUser({
       },
     });
   };
+
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -88,9 +91,9 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CircleUserRound />
-                Account
+              <DropdownMenuItem onClick={() => router.push("/settings")}>
+                <Settings />
+                Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

@@ -20,8 +20,7 @@ export function SiteHeader() {
             className="mx-2 data-[orientation=vertical]:h-4"
           />
           <h1 className="text-lg font-bold">
-            {navMainItems.find((item) => item.url === pathname)?.title ||
-              "Home"}
+            {navMainItems.find((item) => item.url === pathname)?.title || ""}
           </h1>
         </div>
         <div>

@@ -8,18 +8,22 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import SidebarMenuList from "@/lib/nav";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function NavMain() {
   const pathname = usePathname();
   const items = SidebarMenuList["navMain"];
+  const router = useRouter();
 
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem
+              key={item.title}
+              onClick={() => router.push(item.url)}
+            >
               <SidebarMenuButton
                 tooltip={item.title}
                 className={`${item.url === pathname ? "bg-sidebar-accent" : ""}`}

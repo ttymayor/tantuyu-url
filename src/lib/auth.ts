@@ -7,14 +7,22 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
-        ...schema,
-        user: schema.user,
-        session: schema.session,
-        account: schema.account,
-        verification: schema.verification,
+      ...schema,
+      user: schema.user,
+      session: schema.session,
+      account: schema.account,
+      verification: schema.verification,
     },
   }),
   emailAndPassword: {
     enabled: true,
+  },
+  user: {
+    changeEmail: {
+      enabled: true,
+    },
+    deleteUser: {
+      enabled: true,
+    },
   },
 });
