@@ -61,15 +61,15 @@ export function AnalyticsMap({ data }: { data: LocationData[] }) {
                     <Geography
                       key={geoKey}
                       geography={geo}
-                      fill="#EAEAEC"
+                      fill="#877a65"
                       stroke="#D6D6DA"
-                      strokeWidth={0.5}
+                      strokeWidth={0.3}
                       style={{
                         default: { outline: "none" },
                         hover: {
                           fill: "#c0a994",
                           outline: "none",
-                          strokeWidth: 1,
+                          strokeWidth: 0.5,
                         },
                         pressed: { outline: "none" },
                       }}
@@ -90,7 +90,7 @@ export function AnalyticsMap({ data }: { data: LocationData[] }) {
                       r={sizeScale(loc.count)}
                       fill="#6a4f39"
                       stroke="#fff"
-                      strokeWidth={1}
+                      strokeWidth={0.5}
                     />
                     <title>{`${loc.city}, ${loc.country}: ${loc.count}`}</title>
                   </Marker>

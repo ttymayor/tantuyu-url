@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { AnalyticsCharts } from "@/components/dashboard/analytics-charts";
+import { AnalyticsAreaChart } from "@/components/dashboard/analytics-area-chart";
 import { AnalyticsMap } from "@/components/dashboard/analytics-map";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,8 @@ export function AnalyticsView({ urlId }: AnalyticsViewProps) {
           <div className="text-2xl font-bold">{data.eventsCount}</div>
         </div>
       </div>
+
+      <AnalyticsAreaChart data={data.timeSeries} />
 
       {/* Map Section */}
       {data.mapData.length > 0 && <AnalyticsMap data={data.mapData} />}
