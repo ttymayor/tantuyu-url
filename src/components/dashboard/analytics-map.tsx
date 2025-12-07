@@ -2,16 +2,20 @@
 
 import {
   ComposableMap,
+  createCoordinates,
   Geographies,
   Geography,
   Marker,
-} from "react-simple-maps";
+} from "@vnedyalk0v/react19-simple-maps";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { scaleLinear } from "d3-scale";
 import { Map } from "lucide-react";
-
-const geoUrl =
-  "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+const geoUrl = "https://unpkg.com/world-atlas@2/countries-110m.json";
 
 interface LocationData {
   latitude: number;
@@ -35,39 +39,69 @@ export function AnalyticsMap({ data }: { data: LocationData[] }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="aspect-video w-full overflow-hidden rounded-md border bg-slate-100 dark:bg-slate-900">
+        <div className="h-fit w-full">
           <ComposableMap
             projection="geoMercator"
-            projectionConfig={{ scale: 100 }}
-            style={{ width: "100%", height: "100%" }}
+            projectionConfig={{
+              scale: 100,
+              center: createCoordinates(0, 0),
+            }}
           >
             <Geographies geography={geoUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="#EAEAEC"
-                    stroke="#D6D6DA"
-                    style={{
-                      default: { outline: "none" },
-                      hover: { fill: "#F53", outline: "none" },
-                      pressed: { outline: "none" },
-                    }}
-                  />
-                ))
-              }
+              {({ geographies }) => {
+                return geographies.map((geo, index) => {
+                  const geoKey =
+                    geo.properties?.NAME ||
+                    geo.properties?.NAME_LONG ||
+                    geo.properties?.ISO_A3 ||
+                    geo.id ||
+                    `geo-${index}`;
+
+                  return (
+                    <Geography
+                      key={geoKey}
+                      geography={geo}
+                      fill="#EAEAEC"
+                      stroke="#D6D6DA"
+                      strokeWidth={0.5}
+                      style={{
+                        default: { outline: "none" },
+                        hover: {
+                          fill: "#c0a994",
+                          outline: "none",
+                          strokeWidth: 1,
+                        },
+                        pressed: { outline: "none" },
+                      }}
+                      className="transition-all duration-300"
+                    />
+                  );
+                });
+              }}
             </Geographies>
             {data.map((loc, index) => (
-              <Marker key={index} coordinates={[loc.longitude, loc.latitude]}>
-                <circle
-                  r={sizeScale(loc.count)}
-                  fill="#FF5533"
-                  stroke="#fff"
-                  strokeWidth={2}
-                />
-                <title>{`${loc.city}, ${loc.country}: ${loc.count}`}</title>
-              </Marker>
+              <Tooltip key={`marker-${loc.latitude}-${loc.longitude}-${index}`}>
+                <TooltipTrigger asChild>
+                  <Marker
+                    key={`marker-${loc.latitude}-${loc.longitude}-${index}`}
+                    coordinates={createCoordinates(loc.longitude, loc.latitude)}
+                  >
+                    <circle
+                      r={sizeScale(loc.count)}
+                      fill="#6a4f39"
+                      stroke="#fff"
+                      strokeWidth={1}
+                    />
+                    <title>{`${loc.city}, ${loc.country}: ${loc.count}`}</title>
+                  </Marker>
+                </TooltipTrigger>
+                <TooltipContent className="bg-primary text-primary-foreground">
+                  <p className="text-sm">
+                    {loc.city}, {loc.country}
+                  </p>
+                  <p className="text-sm">{loc.count} visits</p>
+                </TooltipContent>
+              </Tooltip>
             ))}
           </ComposableMap>
         </div>
