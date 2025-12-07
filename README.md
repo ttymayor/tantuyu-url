@@ -1,33 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# tantuyu-url
 
-## Getting Started
+這是我的短網址服務，大概 80% Vibe Coding。
 
-First, run the development server:
+## Docker Compose 部署
+
+使用 Docker Compose 快速部署應用程式：
+
+### 1. 設定環境變數
+
+複製 `.env.example` 並建立 `.env` 檔案：
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+編輯 `.env` 檔案，填入必要的環境變數：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+BETTER_AUTH_SECRET=  # 自行生成你的 Secret
+BETTER_AUTH_URL=http://localhost:3000       # 部屬時請改為自己的網域
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+DB_FILE_NAME=sqlite.db
 
-## Learn More
+IPINFO_TOKEN=                               # 用於紀錄請求來源，可於 https://ipinfo.io 申請帳號
 
-To learn more about Next.js, take a look at the following resources:
+NEXT_PUBLIC_BASE_URL=http://localhost:3000  # 部屬時請改為網址的根目錄
+DOMAIN_NAME=localhost:3000                  # 部屬時請改為自己的網域
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 欲使用 Docker compose 建置可以使用該 Image
+DOCKER_IMAGE_NAME=huangmayor0905/tantuyu-url:latest
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. 啟動服務
+
+```bash
+docker-compose up -d
+```
+
+應用程式將在 `http://localhost:3000` 上運行。
+
+### 3. 查看日誌
+
+```bash
+docker-compose logs -f
+```
+
+### 4. 停止服務
+
+```bash
+docker-compose down
+```
+
+資料庫檔案會保存在 `./data` 目錄中，即使容器停止也不會遺失。
 
 ## Deploy on Vercel
 
