@@ -3,7 +3,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Toaster } from "@/components/ui/sonner";
 
-export default function SettingsLayout({
+export default function OverviewLayout({
   children,
 }: {
   children: React.ReactNode;

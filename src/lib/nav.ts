@@ -1,6 +1,6 @@
 "use client";
 
-import { LucideIcon, LayoutDashboard } from "lucide-react";
+import { LucideIcon, LayoutDashboard, CircleGauge } from "lucide-react";
 
 const SidebarMenuList: {
   navMain: {
@@ -11,9 +11,14 @@ const SidebarMenuList: {
 } = {
   navMain: [
     {
+      title: "Overview",
+      url: "/overview",
+      icon: LayoutDashboard,
+    },
+    {
       title: "Dashboard",
       url: "/dashboard",
-      icon: LayoutDashboard,
+      icon: CircleGauge,
     },
   ],
 };
