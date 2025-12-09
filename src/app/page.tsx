@@ -23,7 +23,7 @@ export default async function AuthPage() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md p-4">
         <div className="mb-8 text-center">
-          <h1 className="text-primary text-3xl font-bold">Tantuyu URL</h1>
+          <h1 className="text-primary text-3xl font-bold">tantuyu URL</h1>
           <p className="text-muted-foreground">
             {hasUser
               ? "Welcome back"
