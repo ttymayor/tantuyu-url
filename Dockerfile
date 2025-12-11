@@ -12,14 +12,9 @@ RUN npm ci --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
-# Install build tools again because they are needed for rebuilding better-sqlite3 in this stage
-RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Rebuild better-sqlite3 to ensure it matches the current environment
-RUN npm rebuild better-sqlite3
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
