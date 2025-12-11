@@ -154,6 +154,14 @@ export const getUserUrls = async (
     .offset(offset);
 };
 
+export const getAllUserUrls = async (userId: string) => {
+  return await db
+    .select()
+    .from(urls)
+    .where(eq(urls.userId, userId))
+    .orderBy(desc(urls.createdAt));
+};
+
 export const getUserUrlsCount = async (userId: string) => {
   const [result] = await db
     .select({ count: count() })

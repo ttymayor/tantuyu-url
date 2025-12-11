@@ -6,6 +6,7 @@ import { UrlTable } from "@/components/dashboard/url-table";
 import { PaginationControls } from "@/components/dashboard/pagination-controls";
 import { Loader2, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UrlExportImport } from "@/components/dashboard/url-export-import";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -39,13 +40,16 @@ export function UrlListManager() {
             <span className="sr-only">Refresh</span>
           </Button>
         </div>
-        {isLoading && !data ? (
-          <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-        ) : (
-          <span className="text-muted-foreground text-sm">
-            Total: {data?.total || 0}
-          </span>
-        )}
+        <div className="flex items-center gap-4">
+          <UrlExportImport onImportSuccess={() => mutate()} />
+          {isLoading && !data ? (
+            <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
+          ) : (
+            <span className="text-muted-foreground text-sm">
+              Total: {data?.total || 0}
+            </span>
+          )}
+        </div>
       </div>
 
       {isLoading && !data ? (
