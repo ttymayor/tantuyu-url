@@ -1,22 +1,35 @@
 services:
   app:
-    # Use an image from a registry (defined in .env) or fallback to local
     image: ${DOCKER_IMAGE_NAME:-tantuyu-url:latest}
     build:
       context: .
       dockerfile: Dockerfile
     container_name: tantuyu-url
-    restart: always
+    restart: on-failure
     ports:
       - "127.0.0.1:3000:3000"
     environment:
       - NODE_ENV=production
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=https://${DOMAIN_NAME}
+      - BETTER_AUTH_URL=http://localhost:3000
       - IPINFO_TOKEN=${IPINFO_TOKEN}
-      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
-      - DB_FILE_NAME=/app/data/sqlite.db
-    volumes:
-      - ./data:/app/data
-    # Run migrations on startup to ensure tables exist
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/tantuyu
+    depends_on:
+      - postgres
     command: sh -c "npx drizzle-kit push && node server.js"
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: tantuyu-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tantuyu
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  postgres_data:

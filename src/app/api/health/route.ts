@@ -7,7 +7,7 @@ export async function GET() {
     const startTime = performance.now();
     // Perform a simple query to check database connectivity
     // Using a simple calculation query that doesn't depend on specific tables
-    await db.run(sql`SELECT 1`);
+    await db.execute(sql`SELECT 1`);
     const dbLatency = performance.now() - startTime;
 
     return NextResponse.json(

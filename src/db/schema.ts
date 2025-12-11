@@ -1,30 +1,29 @@
-import { sqliteTable, text, integer, index, real } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+import { pgTable, text, integer, boolean, timestamp, doublePrecision, index } from "drizzle-orm/pg-core";
 
 // --- Auth Tables (Better Auth Standard Schema) ---
 
-export const user = sqliteTable("user", {
+export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: integer("email_verified", { mode: "boolean" }).notNull().default(false),
+  emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const session = sqliteTable("session", {
+export const session = pgTable("session", {
   id: text("id").primaryKey(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
 });
 
-export const account = sqliteTable("account", {
+export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
@@ -32,26 +31,26 @@ export const account = sqliteTable("account", {
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
-  accessTokenExpiresAt: integer("access_token_expires_at", { mode: "timestamp" }),
-  refreshTokenExpiresAt: integer("refresh_token_expires_at", { mode: "timestamp" }),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: text("scope"),
   password: text("password"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const verification = sqliteTable("verification", {
+export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
 // --- App Specific Tables ---
 
-export const urls = sqliteTable("url", {
+export const urls = pgTable("url", {
   id: text("id").primaryKey(),
   originalUrl: text("original_url").notNull(),
   shortCode: text("short_code").notNull().unique(),
@@ -59,21 +58,21 @@ export const urls = sqliteTable("url", {
   clicks: integer("clicks").default(0).notNull(),
   description: text("description"),
   password: text("password"),
-  expiresAt: integer("expires_at", { mode: "timestamp" }),
-  socialPreview: integer("social_preview", { mode: "boolean" }).default(false),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch())`)
+  expiresAt: timestamp("expires_at"),
+  socialPreview: boolean("social_preview").default(false),
+  createdAt: timestamp("created_at")
+    .defaultNow()
     .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .default(sql`(unixepoch())`)
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
     .$onUpdate(() => new Date()) 
     .notNull(),
-}, (table) => ({
-  shortCodeIdx: index("idx_url_short_code").on(table.shortCode),
-  userIdIdx: index("idx_url_user_id").on(table.userId),
-}));
+}, (table) => [
+  index("idx_url_short_code").on(table.shortCode),
+  index("idx_url_user_id").on(table.userId),
+]);
 
-export const urlEvents = sqliteTable("url_event", {
+export const urlEvents = pgTable("url_event", {
   id: text("id").primaryKey(),
   urlId: text("url_id").notNull().references(() => urls.id, { onDelete: "cascade" }),
   browser: text("browser"),
@@ -81,12 +80,12 @@ export const urlEvents = sqliteTable("url_event", {
   os: text("os"),
   country: text("country"),
   city: text("city"),
-  latitude: real("latitude"),
-  longitude: real("longitude"),
+  latitude: doublePrecision("latitude"),
+  longitude: doublePrecision("longitude"),
   referrer: text("referrer"),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch())`)
+  createdAt: timestamp("created_at")
+    .defaultNow()
     .notNull(),
-}, (table) => ({
-  urlIdIdx: index("idx_event_url_id").on(table.urlId),
-}));
+}, (table) => [
+  index("idx_event_url_id").on(table.urlId),
+]);
