@@ -1,26 +1,21 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import useSWR from "swr";
 import { UrlTable } from "@/components/dashboard/url-table";
 import { PaginationControls } from "@/components/dashboard/pagination-controls";
 import { Loader2, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UrlExportImport } from "@/components/dashboard/url-export-import";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { useUrls } from "@/hooks/use-urls";
 
 export function UrlListManager() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 10;
 
-  const { data, error, isLoading, mutate } = useSWR(
-    `/api/urls?page=${page}&limit=${limit}`,
-    fetcher,
-  );
+  const { urls, total, isLoading, isError, mutate } = useUrls({ page, limit });
 
-  if (error) return <div>Failed to load</div>;
+  if (isError) return <div>Failed to load</div>;
 
   return (
     <div className="w-full max-w-4xl space-y-4">
@@ -42,25 +37,25 @@ export function UrlListManager() {
         </div>
         <div className="flex items-center gap-4">
           <UrlExportImport onImportSuccess={() => mutate()} />
-          {isLoading && !data ? (
+          {isLoading && !urls.length ? (
             <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
           ) : (
             <span className="text-muted-foreground text-sm">
-              Total: {data?.total || 0}
+              Total: {total}
             </span>
           )}
         </div>
       </div>
 
-      {isLoading && !data ? (
+      {isLoading && !urls.length ? (
         <div className="flex h-48 items-center justify-center rounded-md border">
           <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
       ) : (
         <>
-          <UrlTable urls={data?.urls || []} mutate={mutate} />
+          <UrlTable urls={urls} mutate={mutate} />
           <PaginationControls
-            totalItems={data?.total || 0}
+            totalItems={total}
             currentPage={page}
             limit={limit}
           />

@@ -34,6 +34,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useUrlRefresher } from "@/hooks/use-urls";
 
 export function CreateUrlForm() {
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ export function CreateUrlForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>();
   const formRef = useRef<HTMLFormElement>(null);
+  const refreshUrls = useUrlRefresher();
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
@@ -62,6 +64,7 @@ export function CreateUrlForm() {
       if (formRef.current) formRef.current.reset();
       setDate(undefined);
       setIsOpen(false);
+      refreshUrls();
     }
   }
 
