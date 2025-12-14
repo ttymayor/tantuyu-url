@@ -35,7 +35,7 @@ interface UrlTableProps {
 function CopyButton({ shortCode }: { shortCode: string }) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     if (!BASE_URL) {
@@ -44,10 +44,45 @@ function CopyButton({ shortCode }: { shortCode: string }) {
     }
 
     const fullUrl = `${BASE_URL}/${shortCode}`;
-    navigator.clipboard.writeText(fullUrl);
-    toast.success("URL copied to clipboard");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(fullUrl);
+        toast.success("URL copied to clipboard");
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        throw new Error("Clipboard API unavailable");
+      }
+    } catch (err) {
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = fullUrl;
+        
+        // Ensure textarea is not visible but part of DOM
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand("copy");
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          toast.success("URL copied to clipboard");
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } else {
+          throw new Error("Fallback copy failed");
+        }
+      } catch (fallbackErr) {
+        toast.error("Failed to copy URL");
+        console.error("Copy failed:", fallbackErr);
+      }
+    }
   };
 
   return (
