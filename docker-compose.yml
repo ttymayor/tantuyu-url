@@ -16,7 +16,7 @@ services:
       - DATABASE_URL=postgres://postgres:password@postgres:5432/tantuyu
     depends_on:
       - postgres
-    command: sh -c "npx drizzle-kit push && node server.js"
+    command: sh -c "bunx drizzle-kit push && bun server.js"
 
   postgres:
     image: postgres:17-alpine
